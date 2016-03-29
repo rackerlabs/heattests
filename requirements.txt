@@ -1,0 +1,10 @@
+coverage
+ddt==1.0.0
+nose
+openstack.nose_plugin
+oslotest>=1.9.0
+testrepository
+testtools
+python-heatclient
+pyrax
+git+https://github.com/openstack/opencafe.git#egg=opencafe
