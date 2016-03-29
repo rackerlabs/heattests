@@ -36,7 +36,7 @@ How to Run the Tests
 
 5. Copy the api.conf file to the path set by CAFE_CONFIG_FILE_PATH::
 
-    $ cp etc/tests.conf ~/.heat/tests.conf
+    $ cp etc/tests.conf.sample ~/.heat/tests.conf
 
 6. Update the config file in ~/.heat/tests.conf with the appropriate values
 

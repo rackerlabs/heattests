@@ -3,7 +3,6 @@
 #=============================================================================
 
 [auth]
-auth_enabled=True
 user_name={username of the cloud account}
 api_key={api key of the cloud account: use either api key or password}
 password={password of the cloud account: use either api key or password}
