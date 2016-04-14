@@ -54,6 +54,11 @@ class TestBase(fixtures.BaseTestFixture):
                                         serialize_format='json',
                                         deserialize_format='json')
 
+        cls.heat_client = client.HeatClient(cls.url, auth_token,
+                                        cls.user_project_id,
+                                        serialize_format='json',
+                                        deserialize_format='json')
+
     @classmethod
     def tearDownClass(cls):
         """Deletes the added resources."""

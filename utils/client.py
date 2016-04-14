@@ -64,7 +64,7 @@ class AuthClient(client.HTTPClient):
         project_id = response.json()['access']['token']['tenant']['id']
         return token, project_id
 
-class OrchestrationClient(client.AutoMarshallingHTTPClient):
+class HeatClient(client.AutoMarshallingHTTPClient):
 
     """Client objects for all the Orchestration api calls."""
 
@@ -76,49 +76,39 @@ class OrchestrationClient(client.AutoMarshallingHTTPClient):
         self.auth_token = auth_token
         self.project_id = project_id
         self.default_headers['X-Auth-Token'] = auth_token
-        self.default_headers['X-Project-Id'] = project_id
+        #self.default_headers['X-Project-Id'] = project_id
         self.default_headers['Content-Type'] = 'application/json'
 
         self.serialize = serialize_format
         self.deserialize_format = deserialize_format
 
-    def create_service(self, service_name=None,
-                       domain_list=None, origin_list=None,
-                       caching_list=None, restrictions_list=None,
-                       requestslib_kwargs=None,
-                       flavor_id=None,
-                       log_delivery=None):
-        """Creates Service
-        :return: Response Object containing response code 200 and body with
-                details of service
-        PUT
-        services/{service_name}
-        """
-        url = '{0}/services'.format(self.url)
+    def create_stack(self, stack_name, parameters={},
+                     timeout_mins=120, template=None, template_url=None,
+                     environment=None):
 
-        if not log_delivery:
-            log_delivery = {"enabled": False}
+        url = '{0}/stacks'.format(self.url)
+        post_body = {
+            "stack_name": stack_name,
+            "parameters": parameters,
+            "timeout_mins": timeout_mins,
+            "environment": environment,
+        }
+        if template:
+            post_body['template'] = template
+        if template_url:
+            post_body['template_url'] = template_url
+        body = json.dumps(post_body)
+        return self.request('POST', url, data=body)
 
-        if log_delivery:
-            request_object = requests.CreateService(
-                service_name=service_name,
-                domain_list=domain_list,
-                origin_list=origin_list,
-                caching_list=caching_list,
-                restrictions_list=restrictions_list,
-                flavor_id=flavor_id,
-                log_delivery=log_delivery)
-        else:
-            request_object = requests.CreateService(
-                service_name=service_name,
-                domain_list=domain_list,
-                origin_list=origin_list,
-                caching_list=caching_list,
-                restrictions_list=restrictions_list,
-                flavor_id=flavor_id)
+    def list_stacks(self, parameters=None):
+        """Lists all stacks for a user."""
+        url = '{0}/stacks'.format(self.url)
+        return self.request('GET', url, params=parameters)
 
-        return self.request('POST', url, request_entity=request_object,
-                            requestslib_kwargs=requestslib_kwargs)
+    def find_stack(self, stack_id, parameters=None):
+        """Find stack using a stack id for a user."""
+        url = '{0}/stacks/{1}'.format(self.url, stack_id)
+        return self.request('GET', url, params=parameters)
 
 class FusionClient(client.AutoMarshallingHTTPClient):
 
