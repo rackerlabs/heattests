@@ -174,6 +174,33 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         body = json.dumps(post_body)
         return self.request('POST', url, data=body)
 
+    def find_resources(self, stack_name):
+        """Get resources for a specified stack (only non-deleted stacks)"""
+        url = '{0}/stacks/{1}/resources'.format(self.url, stack_name)
+        return self.request('GET', url)
+
+    def list_resources(self, stack_name, stack_id):
+        """Get resources for a specified stack (including non-deleted stacks)"""
+        url = '{0}/stacks/{1}/{2}/resources'.format(self.url, stack_name,
+                                                    stack_id)
+        return self.request('GET', url)
+
+    def show_resource_data(self, stack_name, stack_id, resource_name):
+        """Shows data for a specified resource."""
+        url = '{0}/stacks/{1}/{2}/resources/{3}'.format(self.url, stack_name,
+                                                        stack_id, resource_name)
+        return self.request('GET', url)
+
+    def show_resource_schema(self, type_name):
+        """Shows the interface schema for a specified resource type."""
+        url = '{0}/resource_types/{1}'.format(self.url, type_name)
+        return self.request('GET', url)
+
+    def show_resource_template(self, type_name):
+        """Shows the template representation for a specified resource type."""
+        url = '{0}/resource_types/{1}/template'.format(self.url, type_name)
+        return self.request('GET', url)
+
     def wait_for_stack_status(self, location, status,
                                 abort_on_status=None,
                                 retry_interval=2,
