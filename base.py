@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import random
+import string
+
 from heattests.utils import client
 from heattests.utils import config
 
@@ -58,6 +61,14 @@ class TestBase(fixtures.BaseTestFixture):
                                         cls.user_project_id,
                                         serialize_format='json',
                                         deserialize_format='json')
+
+    def generate_random_string(self, prefix='Heat-Tests', length=12):
+        """Generates a random string of given prefix & length"""
+        random_string = ''.join(random.choice(
+            string.ascii_lowercase + string.digits)
+            for _ in range(length))
+        random_string = prefix + random_string
+        return random_string
 
     @classmethod
     def tearDownClass(cls):

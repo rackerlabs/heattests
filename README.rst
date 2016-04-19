@@ -42,4 +42,4 @@ How to Run the Tests
 
 7. Once you are ready to run the tests::
 
-        $ nosetests api
+        $ nosetests tests
