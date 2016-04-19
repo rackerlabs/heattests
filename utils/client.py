@@ -76,7 +76,7 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         self.auth_token = auth_token
         self.project_id = project_id
         self.default_headers['X-Auth-Token'] = auth_token
-        #self.default_headers['X-Project-Id'] = project_id
+        self.default_headers['X-Tenant-Id'] = project_id
         self.default_headers['Content-Type'] = 'application/json'
 
         self.serialize = serialize_format
@@ -110,6 +110,113 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         url = '{0}/stacks/{1}'.format(self.url, stack_id)
         return self.request('GET', url, params=parameters)
 
+    def show_stack(self, stack_name, stack_id, parameters=None):
+        """Show stack using stack name and stack id for a user."""
+        url = '{0}/stacks/{1}/{2}'.format(self.url, stack_name, stack_id)
+        return self.request('GET', url, params=parameters)
+
+    def preview_stack(self, stack_name, template=None, template_url=None,
+                      parameters={}):
+        """Preview stack."""
+        url = '{0}/stacks/preview'.format(self.url)
+        post_body = {
+            "stack_name": stack_name,
+            "parameters": parameters,
+        }
+        if template:
+            post_body['template'] = template
+        if template_url:
+            post_body['template_url'] = template_url
+        body = json.dumps(post_body)
+        return self.request('POST', url, data=body)
+
+    def update_stack(self, stack_name, stack_id, template=None,
+                     template_url=None, parameters={}):
+        """Update a stack."""
+        url = '{0}/stacks/{1}/{2}'.format(self.url, stack_name, stack_id)
+        post_body = {
+            "stack_name": stack_name,
+            "parameters": parameters,
+        }
+        if template:
+            post_body['template'] = template
+        if template_url:
+            post_body['template_url'] = template_url
+        body = json.dumps(post_body)
+        return self.request('PUT', url, data=body)
+
+    def delete_stack(self, stack_id, parameters={}):
+        """Delete a stack."""
+        url = '{0}/stacks/{1}'.format(self.url, stack_id)
+        return self.request('DELETE', url, params=parameters)
+
+    def abandon_stack(self, stack_name, stack_id, parameters={}):
+        """Abandon a stack."""
+        url = '{0}/stacks/{1}/{2}/abandon'.format(self.url, stack_name,
+                                                  stack_id)
+        return self.request('DELETE', url, params=parameters)
+
+    def adopt_stack(self, stack_name, adopt_stack_data, template=None,
+                    template_url=None, parameters={}):
+        """Adopt a stack."""
+        url = '{0}/stacks'.format(self.url)
+        post_body = {
+            "stack_name": stack_name,
+            "adopt_stack_data": adopt_stack_data,
+            "disable_rollback": True,
+            "parameters": parameters,
+            "timeout_mins": 10
+        }
+        if template:
+            post_body['template'] = template
+        if template_url:
+            post_body['template_url'] = template_url
+        body = json.dumps(post_body)
+        return self.request('POST', url, data=body)
+
+    def wait_for_stack_status(self, location, status,
+                                abort_on_status=None,
+                                retry_interval=2,
+                                retry_timeout=30):
+        """Waits for a service to reach a given status."""
+        current_status = ''
+        start_time = int(time.time())
+        stop_time = start_time + retry_timeout
+        while current_status.lower() != status.lower():
+            time.sleep(retry_interval)
+            service = self.get_stack(location=location)
+            body = service.json()
+            current_status = body['stack']['stack_status']
+            if (current_status.lower() == status.lower()):
+                return service
+
+            if abort_on_status is not None:
+                if current_status == abort_on_status:
+                    # this is for debugging purpose,
+                    # will be removed later, so simply use print
+                    print(body.get('errors', []))
+                    assert False, ("Aborted on status {0}").format(
+                        current_status)
+                    return service
+
+            current_time = int(time.time())
+            if current_time > stop_time:
+                assert False, ('Timed out waiting for service status change'
+                               ' to {0} after '
+                               'waiting {1} seconds').format(status,
+                                                             retry_timeout)
+
+    def get_stack(self, location=None,
+                    requestslib_kwargs=None):
+        """Get Service
+        :return: Response Object containing response code 200 and body with
+        details of service
+        GET
+        services/{service_id}
+        """
+        return self.request('GET', location,
+                            requestslib_kwargs=requestslib_kwargs)
+
 class FusionClient(client.AutoMarshallingHTTPClient):
 
     """Client objects for all the Fusion api calls."""
@@ -122,7 +229,7 @@ class FusionClient(client.AutoMarshallingHTTPClient):
         self.auth_token = auth_token
         self.project_id = project_id
         self.default_headers['X-Auth-Token'] = auth_token
-        self.default_headers['X-Project-Id'] = project_id
+        self.default_headers['X-Tenant-Id'] = project_id
         self.default_headers['Content-Type'] = 'application/json'
 
         self.serialize = serialize_format
