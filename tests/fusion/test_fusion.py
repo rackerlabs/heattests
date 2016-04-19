@@ -30,7 +30,3 @@ class TestTemplateID(base.TestBase):
     def test_get_template_id_with_metadata(self, data):
         resp = self.fusion_client.get_templates(with_metadata=data)
         self.assertEqual(resp.status_code, 200)
-        body = resp.json()
-        #save_file(file_name=my_method_name(), body_of_file=body)
-        #true_body = get_file(file_name=my_method_name())
-        #self.assertEqual(body, true_body)

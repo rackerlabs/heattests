@@ -51,17 +51,17 @@ class TestBase(fixtures.BaseTestFixture):
                 cls.auth_config.password)
 
         cls.config = config.HeatConfig()
-        
+
         cls.url = cls.config.base_url + cls.user_project_id
         cls.fusion_client = client.FusionClient(cls.url, auth_token,
-                                        cls.user_project_id,
-                                        serialize_format='json',
-                                        deserialize_format='json')
+                                                cls.user_project_id,
+                                                serialize_format='json',
+                                                deserialize_format='json')
 
         cls.heat_client = client.HeatClient(cls.url, auth_token,
-                                        cls.user_project_id,
-                                        serialize_format='json',
-                                        deserialize_format='json')
+                                            cls.user_project_id,
+                                            serialize_format='json',
+                                            deserialize_format='json')
 
     def generate_random_string(self, prefix='Heat-Tests', length=12):
         """Generates a random string of given prefix & length"""

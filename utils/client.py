@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 import json
-import pyrax
 import time
 
 from cafe.engine.http import client
@@ -32,9 +31,8 @@ class AuthClient(client.HTTPClient):
         self.default_headers['Accept'] = 'application/json'
 
     def authenticate_user(self, auth_url, user_name, api_key=None,
-        password=None):
-        """Get Auth Token & Project ID using api_key
-        """
+                          password=None):
+        """Get Auth Token & Project ID using api_key"""
         if api_key:
             request_body = {
                 "auth": {
@@ -64,6 +62,7 @@ class AuthClient(client.HTTPClient):
         project_id = response.json()['access']['token']['tenant']['id']
         return token, project_id
 
+
 class HeatClient(client.AutoMarshallingHTTPClient):
 
     """Client objects for all the Orchestration api calls."""
@@ -71,7 +70,7 @@ class HeatClient(client.AutoMarshallingHTTPClient):
     def __init__(self, url, auth_token, project_id, serialize_format="json",
                  deserialize_format="json"):
         super(HeatClient, self).__init__(serialize_format,
-                                          deserialize_format)
+                                         deserialize_format)
         self.url = url
         self.auth_token = auth_token
         self.project_id = project_id
@@ -175,12 +174,12 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         return self.request('POST', url, data=body)
 
     def find_resources(self, stack_name):
-        """Get resources for a specified stack (only non-deleted stacks)"""
+        """Get resources for a specified stack(only non-deleted stacks)"""
         url = '{0}/stacks/{1}/resources'.format(self.url, stack_name)
         return self.request('GET', url)
 
     def list_resources(self, stack_name, stack_id):
-        """Get resources for a specified stack (including non-deleted stacks)"""
+        """Get resources for a specified stack(including non-deleted stacks)"""
         url = '{0}/stacks/{1}/{2}/resources'.format(self.url, stack_name,
                                                     stack_id)
         return self.request('GET', url)
@@ -188,7 +187,8 @@ class HeatClient(client.AutoMarshallingHTTPClient):
     def show_resource_data(self, stack_name, stack_id, resource_name):
         """Shows data for a specified resource."""
         url = '{0}/stacks/{1}/{2}/resources/{3}'.format(self.url, stack_name,
-                                                        stack_id, resource_name)
+                                                        stack_id,
+                                                        resource_name)
         return self.request('GET', url)
 
     def show_resource_schema(self, type_name):
@@ -201,10 +201,39 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         url = '{0}/resource_types/{1}/template'.format(self.url, type_name)
         return self.request('GET', url)
 
+    def find_stack_events(self, stack_name):
+        """Finds the canonical URL for the event list of a specified stack."""
+        url = '{0}/stacks/{1}/events'.format(self.url, stack_name)
+        return self.request('GET', url)
+
+    def list_stack_events(self, stack_name, stack_id):
+        """Lists events for a specified stack."""
+        url = '{0}/stacks/{1}/{2}/events'.format(self.url, stack_name,
+                                                 stack_id)
+        return self.request('GET', url)
+
+    def list_resource_events(self, stack_name, stack_id, resource_name):
+        """Lists events for a specified stack resource."""
+        url = '{0}/stacks/{1}/{2}/resources/{3}/events'.format(self.url,
+                                                               stack_name,
+                                                               stack_id,
+                                                               resource_name)
+        return self.request('GET', url)
+
+    def show_event_details(self, stack_name, stack_id, res_name,
+                           event_id):
+        """Shows details for a specified event."""
+        url = '{0}/stacks/{1}/{2}/resources/{3}/events/{4}'.format(self.url,
+                                                                   stack_name,
+                                                                   stack_id,
+                                                                   res_name,
+                                                                   event_id)
+        return self.request('GET', url)
+
     def wait_for_stack_status(self, location, status,
-                                abort_on_status=None,
-                                retry_interval=2,
-                                retry_timeout=30):
+                              abort_on_status=None,
+                              retry_interval=2,
+                              retry_timeout=30):
         """Waits for a service to reach a given status."""
         current_status = ''
         start_time = int(time.time())
@@ -233,8 +262,7 @@ class HeatClient(client.AutoMarshallingHTTPClient):
                                'waiting {1} seconds').format(status,
                                                              retry_timeout)
 
-    def get_stack(self, location=None,
-                    requestslib_kwargs=None):
+    def get_stack(self, location=None, requestslib_kwargs=None):
         """Get Service
         :return: Response Object containing response code 200 and body with
         details of service
@@ -244,6 +272,7 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         return self.request('GET', location,
                             requestslib_kwargs=requestslib_kwargs)
 
+
 class FusionClient(client.AutoMarshallingHTTPClient):
 
     """Client objects for all the Fusion api calls."""
@@ -251,7 +280,7 @@ class FusionClient(client.AutoMarshallingHTTPClient):
     def __init__(self, url, auth_token, project_id, serialize_format="json",
                  deserialize_format="json"):
         super(FusionClient, self).__init__(serialize_format,
-                                          deserialize_format)
+                                           deserialize_format)
         self.url = url
         self.auth_token = auth_token
         self.project_id = project_id

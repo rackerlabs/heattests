@@ -82,7 +82,6 @@ class TestStackOperations(base.TestBase):
 
         resp = self.heat_client.preview_stack(stack_name=stack_name,
                                               template_url=temp_url)
-        body = resp.json()
         self.assertEqual(resp.status_code, 200)
 
     def test_delete_stack(self):
@@ -127,7 +126,7 @@ class TestStackOperations(base.TestBase):
         self.stack_list.append(stack_id)
 
         resp = self.heat_client.abandon_stack(stack_name=stack_name,
-                                             stack_id=stack_id)
+                                              stack_id=stack_id)
         self.assertEqual(resp.status_code, 200)
 
     def test_adopt_stack(self):
@@ -155,7 +154,7 @@ class TestStackOperations(base.TestBase):
             retry_timeout=300)
 
         resp = self.heat_client.abandon_stack(stack_name=stack_name,
-                                             stack_id=stack_id)
+                                              stack_id=stack_id)
         self.assertEqual(resp.status_code, 200)
         body = resp.json()
 

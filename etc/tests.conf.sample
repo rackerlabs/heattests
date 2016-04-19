@@ -9,4 +9,4 @@ password={password of the cloud account: use either api key or password}
 base_url=https://identity.api.rackspacecloud.com/v2.0
 
 [heat]
-base_url=https://fusion.dev.rs-heat.com/v1/
+base_url={heat endpoint to use;For example, https://api.dev.rs-heat.com/v1/}

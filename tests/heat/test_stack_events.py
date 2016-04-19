@@ -17,10 +17,10 @@ limitations under the License.
 from heattests import base
 
 
-class TestStackResources(base.TestBase):
+class TestStackEvents(base.TestBase):
 
     def setUp(self):
-        super(TestStackResources, self).setUp()
+        super(TestStackEvents, self).setUp()
 
         self.stack_list = []
 
@@ -33,43 +33,28 @@ class TestStackResources(base.TestBase):
         self.stack_list.append(resp.json()['stack']['id'])
 
     def tearDown(self):
-        super(TestStackResources, self).tearDown()
+        super(TestStackEvents, self).tearDown()
 
         for stack in self.stack_list:
             resp = self.heat_client.delete_stack(stack_id=stack)
             self.assertEqual(resp.status_code, 200)
 
-    def test_find_stack_resource(self):
+    def test_find_stack_events(self):
         resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp = self.heat_client.find_resources(stack_name=stack_name)
+        resp = self.heat_client.find_stack_events(stack_name=stack_name)
         self.assertEqual(resp.status_code, 200)
 
-    def test_list_resources(self):
+    def test_list_stack_events(self):
         resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp = self.heat_client.list_resources(stack_name=stack_name,
-                                               stack_id=self.stack_list[0])
+        resp = self.heat_client.list_stack_events(stack_name=stack_name,
+                                                  stack_id=self.stack_list[0])
         self.assertEqual(resp.status_code, 200)
 
-    def test_show_resource_data(self):
-        resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
-        stack_name = resp.json()['stack']['stack_name']
-
-        resp = self.heat_client.list_resources(stack_name=stack_name,
-                                               stack_id=self.stack_list[0])
-        self.assertEqual(resp.status_code, 200)
-
-        resp = self.heat_client.show_resource_data(stack_name=stack_name,
-                                                   stack_id=self.stack_list[0],
-                                                   resource_name=resp.json()
-                                                   ['resources'][0]
-                                                   ['resource_name'])
-        self.assertEqual(resp.status_code, 200)
-
-    def test_show_resource_schema(self):
+    def test_list_resource_events(self):
         resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
         stack_name = resp.json()['stack']['stack_name']
 
@@ -77,20 +62,26 @@ class TestStackResources(base.TestBase):
                                                stack_id=self.stack_list[0])
         self.assertEqual(resp.status_code, 200)
 
-        resp = self.heat_client.show_resource_schema(type_name=resp.json()
-                                                     ['resources'][0]
-                                                     ['resource_type'])
-        self.assertEqual(resp.status_code, 200)
+        resp = self.heat_client.list_resource_events(
+                stack_name=stack_name,
+                stack_id=self.stack_list[0],
+                resource_name=resp.json()['resources'][0]['resource_name'])
 
-    def test_show_resource_template(self):
+    def test_show_event_details(self):
         resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp = self.heat_client.list_resources(stack_name=stack_name,
-                                               stack_id=self.stack_list[0])
+        resp_res = self.heat_client.list_resources(stack_name=stack_name,
+                                                   stack_id=self.stack_list[0])
         self.assertEqual(resp.status_code, 200)
 
-        resp = self.heat_client.show_resource_template(type_name=resp.json()
-                                                       ['resources'][0]
-                                                       ['resource_type'])
+        resp_event = self.heat_client.list_stack_events(
+                stack_name=stack_name,
+                stack_id=self.stack_list[0])
         self.assertEqual(resp.status_code, 200)
+
+        resp = self.heat_client.list_resource_events(
+                stack_name=stack_name,
+                stack_id=self.stack_list[0],
+                resource_name=resp_res.json()['resources'][0]['resource_name'],
+                event_id=resp_event.json()['events'][0]['id'])
