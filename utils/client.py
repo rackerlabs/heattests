@@ -233,11 +233,11 @@ class HeatClient(client.AutoMarshallingHTTPClient):
     def get_stack_template(self, stack_name, stack_id):
         """Gets a template for a specified stack."""
         url = '{0}/stacks/{1}/{2}/template'.format(self.url, stack_name,
-                                                 stack_id)
+                                                   stack_id)
         return self.request('GET', url)
 
     def validate_template(self, template=None, template_url=None,
-                      environment=None):
+                          environment=None):
         """Validates a specified template."""
         url = '{0}/validate'.format(self.url)
         post_body = {
