@@ -6,4 +6,8 @@ oslotest>=1.9.0
 testrepository
 testtools
 pyrax
+pbr
+requests
+six
 git+https://github.com/openstack/opencafe.git#egg=opencafe
+git+ssh://git@github.rackspace.com/O3Eng/pwsafe.git#egg=pwsafe
