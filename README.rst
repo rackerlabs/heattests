@@ -17,7 +17,7 @@ How to Run the Tests
 
 2. Set the following environment variables::
 
-    export CAFE_CONFIG_FILE_PATH=~/.heat/tests.conf
+    export CAFE_CONFIG_FILE_PATH={path to heattests/etc}
     export CAFE_ROOT_LOG_PATH=~/.heat/logs
     export CAFE_TEST_LOG_PATH=~/.heat/logs
 
