@@ -230,6 +230,26 @@ class HeatClient(client.AutoMarshallingHTTPClient):
                                                                    event_id)
         return self.request('GET', url)
 
+    def get_stack_template(self, stack_name, stack_id):
+        """Gets a template for a specified stack."""
+        url = '{0}/stacks/{1}/{2}/template'.format(self.url, stack_name,
+                                                 stack_id)
+        return self.request('GET', url)
+
+    def validate_template(self, template=None, template_url=None,
+                      environment=None):
+        """Validates a specified template."""
+        url = '{0}/validate'.format(self.url)
+        post_body = {
+            "environment": environment,
+        }
+        if template:
+            post_body['template'] = template
+        if template_url:
+            post_body['template_url'] = template_url
+        body = json.dumps(post_body)
+        return self.request('POST', url, data=body)
+
     def wait_for_stack_status(self, location, status,
                               abort_on_status=None,
                               retry_interval=2,
