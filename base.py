@@ -40,6 +40,8 @@ class TestBase(fixtures.BaseTestFixture):
         import requests.packages.urllib3
         requests.packages.urllib3.disable_warnings()
 
+        cls.stack_list = {}
+
         cls.auth_config = config.AuthConfig()
 
         cls.auth_client = client.AuthClient()
@@ -74,4 +76,8 @@ class TestBase(fixtures.BaseTestFixture):
     @classmethod
     def tearDownClass(cls):
         """Deletes the added resources."""
+        for stack in cls.stack_list:
+            cls.heat_client.delete_stack(
+                    stack_name=cls.stack_list[stack],
+                    stack_id=stack)
         super(TestBase, cls).tearDownClass()

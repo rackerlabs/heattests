@@ -144,9 +144,9 @@ class HeatClient(client.AutoMarshallingHTTPClient):
         body = json.dumps(post_body)
         return self.request('PUT', url, data=body)
 
-    def delete_stack(self, stack_id, parameters={}):
+    def delete_stack(self, stack_name, stack_id, parameters={}):
         """Delete a stack."""
-        url = '{0}/stacks/{1}'.format(self.url, stack_id)
+        url = '{0}/stacks/{1}/{2}'.format(self.url, stack_name, stack_id)
         return self.request('DELETE', url, params=parameters)
 
     def abandon_stack(self, stack_name, stack_id, parameters={}):
