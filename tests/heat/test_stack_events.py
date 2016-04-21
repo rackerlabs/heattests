@@ -22,66 +22,63 @@ class TestStackEvents(base.TestBase):
     def setUp(self):
         super(TestStackEvents, self).setUp()
 
-        self.stack_list = []
-
         stack_name = self.generate_random_string(prefix='Sabeen')
         temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
                    'master/dev/smoke.yaml'
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
-        self.stack_list.append(resp.json()['stack']['id'])
+        self.stack_list[resp.json()['stack']['id']] = stack_name
 
     def tearDown(self):
         super(TestStackEvents, self).tearDown()
 
-        for stack in self.stack_list:
-            resp = self.heat_client.delete_stack(stack_id=stack)
-            self.assertEqual(resp.status_code, 200)
-
     def test_find_stack_events(self):
-        resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
+        resp = self.heat_client.find_stack(stack_id=self.stack_list.keys()[0])
         stack_name = resp.json()['stack']['stack_name']
 
         resp = self.heat_client.find_stack_events(stack_name=stack_name)
         self.assertEqual(resp.status_code, 200)
 
     def test_list_stack_events(self):
-        resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
+        resp = self.heat_client.find_stack(stack_id=self.stack_list.keys()[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp = self.heat_client.list_stack_events(stack_name=stack_name,
-                                                  stack_id=self.stack_list[0])
+        resp = self.heat_client.list_stack_events(
+                stack_name=stack_name,
+                stack_id=self.stack_list.keys()[0])
         self.assertEqual(resp.status_code, 200)
 
     def test_list_resource_events(self):
-        resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
+        resp = self.heat_client.find_stack(stack_id=self.stack_list.keys()[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp = self.heat_client.list_resources(stack_name=stack_name,
-                                               stack_id=self.stack_list[0])
+        resp = self.heat_client.list_resources(
+                stack_name=stack_name,
+                stack_id=self.stack_list.keys()[0])
         self.assertEqual(resp.status_code, 200)
 
         resp = self.heat_client.list_resource_events(
                 stack_name=stack_name,
-                stack_id=self.stack_list[0],
+                stack_id=self.stack_list.keys()[0],
                 resource_name=resp.json()['resources'][0]['resource_name'])
 
     def test_show_event_details(self):
-        resp = self.heat_client.find_stack(stack_id=self.stack_list[0])
+        resp = self.heat_client.find_stack(stack_id=self.stack_list.keys()[0])
         stack_name = resp.json()['stack']['stack_name']
 
-        resp_res = self.heat_client.list_resources(stack_name=stack_name,
-                                                   stack_id=self.stack_list[0])
+        resp_res = self.heat_client.list_resources(
+                stack_name=stack_name,
+                stack_id=self.stack_list.keys()[0])
         self.assertEqual(resp.status_code, 200)
 
         resp_event = self.heat_client.list_stack_events(
                 stack_name=stack_name,
-                stack_id=self.stack_list[0])
+                stack_id=self.stack_list.keys()[0])
         self.assertEqual(resp.status_code, 200)
 
-        resp = self.heat_client.list_resource_events(
+        resp = self.heat_client.show_event_details(
                 stack_name=stack_name,
-                stack_id=self.stack_list[0],
-                resource_name=resp_res.json()['resources'][0]['resource_name'],
+                stack_id=self.stack_list.keys()[0],
+                res_name=resp_res.json()['resources'][0]['resource_name'],
                 event_id=resp_event.json()['events'][0]['id'])

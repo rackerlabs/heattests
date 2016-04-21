@@ -21,7 +21,6 @@ class TestStackOperations(base.TestBase):
 
     def setUp(self):
         super(TestStackOperations, self).setUp()
-        self.stack_list = []
 
     def test_list_stack(self):
         resp = self.heat_client.list_stacks()
@@ -34,7 +33,7 @@ class TestStackOperations(base.TestBase):
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
-        self.stack_list.append(resp.json()['stack']['id'])
+        self.stack_list[resp.json()['stack']['id']] = stack_name
 
     def test_find_stack(self):
         stack_name = self.generate_random_string(prefix='Sabeen')
@@ -45,7 +44,7 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
-        self.stack_list.append(stack_id)
+        self.stack_list[stack_id] = stack_name
 
         resp = self.heat_client.find_stack(stack_id=stack_id)
         body = resp.json()
@@ -64,7 +63,7 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
-        self.stack_list.append(stack_id)
+        self.stack_list[stack_id] = stack_name
 
         resp = self.heat_client.show_stack(stack_name=stack_name,
                                            stack_id=stack_id)
@@ -93,10 +92,10 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
-        self.stack_list.append(stack_id)
 
-        resp = self.heat_client.delete_stack(stack_id=stack_id)
-        self.assertEqual(resp.status_code, 200)
+        resp = self.heat_client.delete_stack(stack_name=stack_name,
+                                             stack_id=stack_id)
+        self.assertEqual(resp.status_code, 204)
 
     def test_update_stack(self):
         stack_name = self.generate_random_string(prefix='Sabeen')
@@ -107,7 +106,8 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
-        self.stack_list.append(stack_id)
+
+        self.stack_list[stack_id] = stack_name
         resp = self.heat_client.update_stack(stack_name=stack_name,
                                              stack_id=stack_id,
                                              template_url=temp_url)
@@ -123,7 +123,6 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
-        self.stack_list.append(stack_id)
 
         resp = self.heat_client.abandon_stack(stack_name=stack_name,
                                               stack_id=stack_id)
@@ -163,7 +162,4 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 201)
 
     def tearDown(self):
-        for stack in self.stack_list:
-            resp = self.heat_client.delete_stack(stack_id=stack)
-            self.assertEqual(resp.status_code, 200)
         super(TestStackOperations, self).tearDown()
