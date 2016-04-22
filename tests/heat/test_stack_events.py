@@ -22,9 +22,8 @@ class TestStackEvents(base.TestBase):
     def setUp(self):
         super(TestStackEvents, self).setUp()
 
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
