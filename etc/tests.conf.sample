@@ -10,3 +10,4 @@ base_url=https://identity.api.rackspacecloud.com/v2.0
 
 [heat]
 base_url={heat endpoint to use;For example, https://api.dev.rs-heat.com/v1/}
+template_url={template to use, give the raw template url}

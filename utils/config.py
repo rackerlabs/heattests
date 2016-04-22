@@ -50,3 +50,8 @@ class HeatConfig(data_interfaces.ConfigSectionInterface):
     def base_url(self):
         """heat endpoint."""
         return self.get('base_url')
+
+    @property
+    def template_url(self):
+        """template url to use."""
+        return self.get('template_url')

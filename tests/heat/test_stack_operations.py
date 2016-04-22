@@ -27,18 +27,16 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 200)
 
     def test_create_stack(self):
-        stack_name = self.generate_random_string(prefix='ADOPT_34')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
         self.stack_list[resp.json()['stack']['id']] = stack_name
 
     def test_find_stack(self):
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
@@ -55,9 +53,8 @@ class TestStackOperations(base.TestBase):
                          self.user_project_id)
 
     def test_show_stack(self):
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
@@ -75,18 +72,16 @@ class TestStackOperations(base.TestBase):
                          self.user_project_id)
 
     def test_preview_stack(self):
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
 
         resp = self.heat_client.preview_stack(stack_name=stack_name,
                                               template_url=temp_url)
         self.assertEqual(resp.status_code, 200)
 
     def test_delete_stack(self):
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
@@ -98,9 +93,8 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 204)
 
     def test_update_stack(self):
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = self.config.template_url
         resp = self.heat_client.create_stack(stack_name=stack_name,
                                              template_url=temp_url)
         self.assertEqual(resp.status_code, 201)
@@ -114,12 +108,16 @@ class TestStackOperations(base.TestBase):
         self.assertEqual(resp.status_code, 202)
 
     def test_abandon_stack(self):
+        self.skipTest('Not working - Test needs to be updated')
         # Add the use of the test.yaml and check nova to ensure server exists
-        stack_name = self.generate_random_string(prefix='Sabeen')
-        temp_url = 'https://raw.githubusercontent.com/rackerlabs/heat-ci/' \
-                   'master/dev/smoke.yaml'
+        stack_name = self.generate_random_string(prefix='Heat_QE')
+        temp_url = 'https://raw.githubusercontent.com/BeenzSyed/heat-ci/' \
+                   'add_test_template/dev/test.yaml'
+        params = {'flavor': '1 GB Performance',
+                  'image': '9d29f10e-4fc2-4556-8d25-532d1784329a'}
         resp = self.heat_client.create_stack(stack_name=stack_name,
-                                             template_url=temp_url)
+                                             template_url=temp_url,
+                                             parameters=params)
         self.assertEqual(resp.status_code, 201)
         body = resp.json()
         stack_id = body['stack']['id']
@@ -130,7 +128,7 @@ class TestStackOperations(base.TestBase):
 
     def test_adopt_stack(self):
         self.skipTest('Not working - Adopt stack might be taken out of Heat')
-        stack_name = self.generate_random_string(prefix='Sabeen')
+        stack_name = self.generate_random_string(prefix='Heat_QE')
         temp_url = 'https://raw.githubusercontent.com/BeenzSyed/heat-ci/' \
                    'add_test_template/dev/test.yaml'
         params = {'flavor': '1 GB Performance',
